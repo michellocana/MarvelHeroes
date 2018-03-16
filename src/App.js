@@ -6,13 +6,15 @@ import {
 	UIManager
 } from 'react-native';
 
+import Api from './Api';
 import HeroesList from './HeroesList';
 import HeroDetail from './HeroDetail';
 
 const INITIAL_STATE = {
 	isDetailOpen: false,
 	selectedHero: null,
-	heroDimensions: null
+	heroDimensions: null,
+	characters: []
 };
 
 export default class App extends Component {
@@ -22,6 +24,14 @@ export default class App extends Component {
 		this.state = INITIAL_STATE;
 
 		this.onHeroPress = this.onHeroPress.bind(this);
+	}
+
+	componentDidMount() {
+		const api = new Api();
+
+		api.getCharacters().then(characters => {
+			this.setState({ characters });
+		});
 	}
 
 	componentWillMount() {
@@ -40,20 +50,26 @@ export default class App extends Component {
 	}
 
 	render() {
-		const { 
-			selectedHero, 
+		const {
+			selectedHero,
 			isShowingDetail,
-			heroDimensions
+			heroDimensions,
+			characters
 		} = this.state;
+
+		const isLoading = characters.length === 0;
 
 		return (
 			<View style={styles.container}>
-				<HeroesList onPress={this.onHeroPress} />				
+				<HeroesList
+					data={characters}
+					loading={isLoading}
+				/>
 
-				<HeroDetail 
+				<HeroDetail
 					selectedHero={selectedHero}
 					isShowingDetail={isShowingDetail}
-					heroDimensions={heroDimensions}					
+					heroDimensions={heroDimensions}
 				/>
 			</View>
 		);
@@ -66,5 +82,5 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-start',
 		alignItems: 'center',
 		backgroundColor: '#f8f8f8',
-	}	
+	}
 });
