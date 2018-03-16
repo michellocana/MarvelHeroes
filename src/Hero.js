@@ -10,6 +10,8 @@ import {
 
 import HeroDetail from './HeroDetail';
 
+const windowWidth = Dimensions.get('window').width;
+
 class Hero extends Component {
 
 	constructor(props) {
@@ -21,24 +23,32 @@ class Hero extends Component {
 		// Measuring position in window to perform HeroDetail animation
 		this.viewRef.measureInWindow((x, y, width, height) => {
 			const dimensions = { x, y, width, height };			
-			
+
 			this.props.onPress(this.props.data, dimensions);
 		});
 	}
 
 	render() {
-		const { containerStyle } = styles;
+		const { index, data } = this.props;
 
-		const { image } = this.props.data;
+		const { 
+			containerStyle, 
+			firstOfListContainerStyle 
+		} = styles;
 
-		const imageDimensions = {
-			width: Dimensions.get('window').width,
+		const imageStyle = {
+			width: windowWidth,
 			height: 300
 		};
 
+		const isFirstOfList = index === 0;
+
 		return (
 			<View 
-				style={containerStyle}
+				style={[
+					containerStyle,
+					isFirstOfList && firstOfListContainerStyle
+				]}
 				ref={ref => this.viewRef = ref}
 			>
 				<TouchableNativeFeedback 
@@ -48,10 +58,10 @@ class Hero extends Component {
 				>
 					<View>
 						<Image
-							style={imageDimensions}
+							style={imageStyle}
 							source={{
-								uri: image,
-								...imageDimensions
+								uri: data.image,
+								...imageStyle
 							}}
 						/>		
 					</View>
@@ -66,9 +76,14 @@ const styles = StyleSheet.create({
 	containerStyle: {
 		flex: 0,
 		height: 300,
-		margin: 10,
-		elevation: 3,
+		marginHorizontal: 10,
+		marginBottom: 10,
+		elevation: 4,
 		backgroundColor: '#f8f8f8'
+	},
+
+	firstOfListContainerStyle: {
+		marginTop: 10
 	}
 });
 

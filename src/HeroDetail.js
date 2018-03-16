@@ -8,12 +8,13 @@ import {
 	Easing,
 	ScrollView,
 	Image,
-	BackHandler
+	BackHandler,
+	StatusBar
 } from 'react-native';
 
 const dimensions = Dimensions.get('window');
 const windowWidth = dimensions.width;
-const windowHeight = dimensions.height;
+const windowHeight = dimensions.height - StatusBar.currentHeight;
 
 export default class HeroDetail extends Component {
 
@@ -70,7 +71,7 @@ export default class HeroDetail extends Component {
 		}, () => {			
 			Animated.timing(this.animatedValue, {
 				toValue: isShowingDetail ? 1 : 0,
-				duration: 300,
+				duration: 400,
 				easing: Easing.quad
 			}).start(this.onAnimationEnd);
 		});

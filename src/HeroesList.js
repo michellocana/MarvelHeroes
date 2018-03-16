@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
 	Text,
-	ScrollView
+	ScrollView,
+	StyleSheet
 } from 'react-native';
 
 import Hero from './Hero';
@@ -14,6 +15,7 @@ export default class HeroesList extends Component {
 		return heroes.map((hero, index) => (
 			<Hero
 				key={index}
+				index={index}
 				data={hero}
 				onPress={this.props.onPress}
 			/>
@@ -21,8 +23,10 @@ export default class HeroesList extends Component {
 	}
 
 	render() {
+		const { containerStyle } = styles;
+
 		return (
-			<ScrollView style={{ flex: 1, width: '100%' }}>
+			<ScrollView style={containerStyle}>
 				{this.renderHeroes()}
 			</ScrollView>
 		)
@@ -30,3 +34,9 @@ export default class HeroesList extends Component {
 
 }
 
+const styles = StyleSheet.create({
+	containerStyle: {
+		flex: 1,
+		width: '100%'
+	}
+})
