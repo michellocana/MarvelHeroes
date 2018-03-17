@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
 import {
-	StyleSheet,
-	Text,
 	View,
 	UIManager,
-	StatusBar
+	StatusBar,
+	StyleSheet
 } from 'react-native';
 
 import COLORS from './constants/Colors';
-import HeroesList from './components/HeroesList';
+import HeroList from './components/HeroList';
 import HeroDetail from './components/HeroDetail';
 
 const INITIAL_STATE = {
 	isDetailOpen: false,
 	selectedHero: null,
-	heroDimensions: null	
+	heroDimensions: null
 };
 
 export default class App extends Component {
-
 	constructor(props) {
 		super(props);
 		this.state = INITIAL_STATE;
@@ -50,11 +48,11 @@ export default class App extends Component {
 
 		return (
 			<View style={styles.container}>
-			<StatusBar 
+			<StatusBar
 				backgroundColor={COLORS.STATUSBAR_RED}
 			/>
-				<HeroesList onPress={this.onHeroPress} />
-				
+				<HeroList onPress={this.onHeroPress} />
+
 				<HeroDetail
 					selectedHero={selectedHero}
 					isShowingDetail={isShowingDetail}

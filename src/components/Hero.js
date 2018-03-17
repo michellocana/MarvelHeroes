@@ -8,7 +8,6 @@ import {
 	TouchableNativeFeedback
 } from 'react-native';
 
-import HeroDetail from './HeroDetail';
 import COLORS from '../constants/Colors';
 import defaultThumbnail from '../img/hero-placeholder.jpg';
 
@@ -17,25 +16,14 @@ const windowWidth = Dimensions.get('window').width;
 const DEFAULT_DESCRIPTION = 'No description provided.';
 
 class Hero extends Component {
-
 	constructor(props) {
 		super(props);
+		this.onRef = this.onRef.bind(this);
 		this.onPress = this.onPress.bind(this);
 	}
 
-	getThumbnail() {
-		const { 
-			extension: thumbExtension, 
-			path: thumbPath 
-		} = this.props.data.thumbnail;
-
-		const thumbnailURL = `${thumbPath}.${thumbExtension}`;
-	
-		if (thumbPath.endsWith('image_not_available')) {
-			return defaultThumbnail;
-		}
-
-		return { uri: thumbnailURL };
+	onRef(ref) {
+		this.viewRef = ref;
 	}
 
 	onPress() {
@@ -53,31 +41,50 @@ class Hero extends Component {
 		});
 	}
 
+	getThumbnailURL() {
+		const {
+			extension: thumbExtension,
+			path: thumbPath
+		} = this.props.data.thumbnail;
+
+		return `${thumbPath}.${thumbExtension}`;
+	}
+
+	getThumbnail() {
+		const thumbnailURL = this.getThumbnailURL();
+
+		if (thumbnailURL.endsWith('image_not_available')) {
+			return defaultThumbnail;
+		}
+
+		return { uri: thumbnailURL };
+	}
+
 	render() {
 		const { index, data } = this.props;
 
-		const { 
+		const {
 			imageStyle,
 			titleStyle,
-			containerStyle, 
-			firstOfListContainerStyle 
+			containerStyle,
+			firstOfListContainerStyle
 		} = styles;
 
 		const isFirstOfList = index === 0;
 
-		const name = `#${index + 1} - ${data.name}`
+		const name = `#${index + 1} - ${data.name}`;
 
 		return (
-			<View 
-				ref={ref => this.viewRef = ref}
+			<View
+				ref={this.onRef}
 				style={[
 					containerStyle,
 					isFirstOfList && firstOfListContainerStyle
 				]}
 			>
-				<TouchableNativeFeedback 
+				<TouchableNativeFeedback
+					useForeground
 					delayPressIn={0}
-					useForeground={true}
 					onPress={this.onPress}
 				>
 					<View>
@@ -94,7 +101,6 @@ class Hero extends Component {
 			</View>
 		);
 	}
-
 }
 
 const styles = StyleSheet.create({

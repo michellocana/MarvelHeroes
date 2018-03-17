@@ -14,14 +14,15 @@ import logoMarvel from '../img/logo-marvel-vertical.jpg';
 const dimensions = Dimensions.get('window');
 const windowWidth = dimensions.width;
 
-export default class HeroComic extends Component {
+const INITIAL_STATE = {
+	image: null
+};
 
+export default class HeroComic extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			image: logoMarvel
-		};
+		this.state = INITIAL_STATE;
 	}
 
 	componentDidMount() {
@@ -29,47 +30,60 @@ export default class HeroComic extends Component {
 
 		const { resourceURI } = this.props;
 
-		const comicID = resourceURI.substr(resourceURI.lastIndexOf('/') + 1)
+		const comicID = resourceURI.substr(resourceURI.lastIndexOf('/') + 1);
 
 		api.getComic(comicID).then(comic => {
-			const { 
-				extension: thumbExtension, 
-				path: thumbPath 
+			const {
+				extension: thumbExtension,
+				path: thumbPath
 			} = comic.thumbnail;
 
-			if (!thumbPath.endsWith('image_not_available')) {				
+			if (!thumbPath.endsWith('image_not_available')) {
 				const thumbnailURL = `${thumbPath}.${thumbExtension}`;
-				
-				setTimeout(() => {
 
 				this.setState({
-					image: { uri: thumbnailURL } 
+					image: { uri: thumbnailURL }
 				});
-				}, 2000);
-
 			}
 		});
 	}
 
+	renderThumbnail() {
+		const { image } = this.state;
+		const { imageStyle, thumbnailStyle } = styles;
+
+		if (image) {
+			return (
+				<Image
+					source={image}
+					style={[imageStyle, thumbnailStyle]}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	render() {
-		const { 
+		const {
 			textStyle,
 			imageStyle,
 			wrapperStyle,
-			containerStyle, 
+			containerStyle,
 			imageContainerStyle
 		} = styles;
 		const { name } = this.props;
-		const { image } = this.state;
 
 		return (
-			<View style={wrapperStyle}>				
-				<View style={containerStyle}> 
+			<View style={wrapperStyle}>
+				<View style={containerStyle}>
 					<View style={[imageContainerStyle, imageStyle]}>
-						<Image 
-							style={[imageStyle]}
-							source={image}
+						<Image
+							style={imageStyle}
+							source={logoMarvel}
 						/>
+
+						{this.renderThumbnail()}
 					</View>
 
 					<Text style={textStyle}>
@@ -79,7 +93,6 @@ export default class HeroComic extends Component {
 			</View>
 		);
 	}
-
 }
 
 const styles = StyleSheet.create({
@@ -94,7 +107,7 @@ const styles = StyleSheet.create({
 
 	imageStyle: {
 		width: '100%',
-		height: (windowWidth - 40) / 2 * 1.53
+		height: ((windowWidth - 40) / 2) * 1.53
 	},
 
 	imageContainerStyle: {
@@ -105,5 +118,11 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: COLORS.BLACK,
 		paddingTop: 4
+	},
+
+	thumbnailStyle: {
+		position: 'absolute',
+		top: 0,
+		left: 0
 	}
 });

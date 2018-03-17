@@ -11,28 +11,25 @@ import {
 	BackHandler,
 	StatusBar
 } from 'react-native';
-import _ from 'lodash';
 
-import Api from '../utils/Api';
 import COLORS from '../constants/Colors';
 import HeroComicList from '../components/HeroComicList';
 import HeroDetailHeader from '../components/HeroDetailHeader';
 
-const dimensions = Dimensions.get('window');
-const windowWidth = dimensions.width;
-const windowHeight = dimensions.height - StatusBar.currentHeight;
+const windowDimensions = Dimensions.get('window');
+const windowWidth = windowDimensions.width;
+const windowHeight = windowDimensions.height - StatusBar.currentHeight;
 
 const INITIAL_STATE = {
 	isScrollEnabled: false,
-	didAnimationStart: false,			
+	didAnimationStart: false,
 	didAnimationEnd: false,
 	headerOpacity: 0
 };
 
+const HEADER_THRESHOLD = 400;
+
 export default class HeroDetail extends Component {
-
-	static HEADER_THRESHOLD = 400;
-
 	constructor(props) {
 		super(props);
 
@@ -50,12 +47,20 @@ export default class HeroDetail extends Component {
 		BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
 	}
 
+	componentWillReceiveProps({ isShowingDetail }) {
+		this.prepareAnimaton(isShowingDetail);
+	}
+
 	onAnimationEnd() {
 		this.setState({
 			isScrollEnabled: this.props.isShowingDetail,
 			didAnimationStart: false,
 			isAnimating: false
 		});
+	}
+
+	onScrollViewRef(ref) {
+		this.ScrollViewRef = ref;
 	}
 
 	onBackPress() {
@@ -72,15 +77,19 @@ export default class HeroDetail extends Component {
 		return false;
 	}
 
-	componentWillReceiveProps({ isShowingDetail }) {	
-		this.prepareAnimaton(isShowingDetail);		
+	onScrollViewScroll({ nativeEvent }) {
+		const { y } = nativeEvent.contentOffset;
+
+		const isHeaderVisible = y > HEADER_THRESHOLD;
+
+		this.setState({ isHeaderVisible });
 	}
 
 	prepareAnimaton(isShowingDetail) {
 		this.setState({
 			didAnimationStart: true,
 			isAnimating: true
-		}, () => {			
+		}, () => {
 			Animated.timing(this.animatedValue, {
 				toValue: isShowingDetail ? 1 : 0,
 				duration: 400,
@@ -89,21 +98,13 @@ export default class HeroDetail extends Component {
 		});
 	}
 
-	onScrollViewScroll({ nativeEvent }) {
-		const { y } = nativeEvent.contentOffset;
-
-		const isHeaderVisible = y > HeroDetail.HEADER_THRESHOLD;
-
-		this.setState({ isHeaderVisible });
-	}
-
 	renderHeader() {
 		const { selectedHero } = this.props;
 		const { isHeaderVisible } = this.state;
 
 		if (selectedHero) {
 			return (
-				<HeroDetailHeader 
+				<HeroDetailHeader
 					visible={isHeaderVisible}
 					title={selectedHero.name}
 				/>
@@ -124,18 +125,18 @@ export default class HeroDetail extends Component {
 						Appears on:
 					</Text>
 
-					<HeroComicList 
-						data={selectedHero.comics.items} 
+					<HeroComicList
+						data={selectedHero.comics.items}
 					/>
 				</Fragment>
 			);
 		}
 
-		return null;		
+		return null;
 	}
 
 	renderImageOverlay() {
-		const { heroDimensions, isShowingDetail } = this.props;
+		const { heroDimensions } = this.props;
 
 		const { didAnimationStart } = this.state;
 
@@ -188,11 +189,11 @@ export default class HeroDetail extends Component {
 		const { selectedHero } = this.props;
 
 		if (!selectedHero) return null;
-		
-		const { 
+
+		const {
 			infoContainerStyle,
 			infoTextStyle,
-			infoTitleStyle			
+			infoTitleStyle
 		} = styles;
 
 		return (
@@ -207,21 +208,13 @@ export default class HeroDetail extends Component {
 
 				{this.renderComics()}
 			</View>
-		)
+		);
 	}
 
-	render () {
-		const { 
-			selectedHero, 
-			isShowingDetail,
-			heroDimensions
-		} = this.props;
-
-		const { 
+	render() {
+		const {
 			containerStyle,
-			contentStyle, 
-			contentActiveStyle,
-			scrollViewContentStyle,
+			contentStyle,
 			imageWrapperStyle
 		} = styles;
 
@@ -229,7 +222,7 @@ export default class HeroDetail extends Component {
 
 		const animatedTranslate = {
 			transform: [
-				{ 
+				{
 					translateY: this.animatedValue.interpolate({
 						inputRange: [0, 1],
 						outputRange: [windowHeight, 0]
@@ -241,21 +234,21 @@ export default class HeroDetail extends Component {
 		return (
 			<View style={containerStyle}>
 				{this.renderHeader()}
-				
+
 				{this.renderImageOverlay()}
 
-				<Animated.View 
+				<Animated.View
 					style={[
 						contentStyle,
 						animatedTranslate
 					]}
 				>
-					<ScrollView 
+					<ScrollView
 						onScroll={this.onScrollViewScroll}
-						ref={ref => this.ScrollViewRef = ref }
+						ref={this.onScrollViewRef}
 					>
 						<View style={imageWrapperStyle}>
-							{!isAnimating && this.renderImage()}							
+							{!isAnimating && this.renderImage()}
 						</View>
 
 						{this.renderContent()}
@@ -263,12 +256,10 @@ export default class HeroDetail extends Component {
 				</Animated.View>
 			</View>
 		);
-
 	}
-
 }
 
-const styles = StyleSheet.create({	
+const styles = StyleSheet.create({
 	containerStyle: {
 		position: 'absolute',
 		top: 0,

@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
-import { 
-	View, 
+import {
 	Text,
 	StyleSheet,
 	Animated
@@ -9,7 +8,6 @@ import {
 import COLORS from '../constants/Colors';
 
 export default class HeroDetailHeader extends PureComponent {
-
 	constructor(props) {
 		super(props);
 
@@ -34,7 +32,7 @@ export default class HeroDetailHeader extends PureComponent {
 		const {
 			headerTitleStyle,
 			headerContainerStyle
-		} = styles; 
+		} = styles;
 
 		const { title } = this.props;
 
@@ -48,7 +46,7 @@ export default class HeroDetailHeader extends PureComponent {
 		if (!title) return null;
 
 		return (
-			<Animated.View 
+			<Animated.View
 				pointerEvents='none'
 				style={[headerContainerStyle, opacityStyle]}
 			>
@@ -80,4 +78,4 @@ const styles = StyleSheet.create({
 		color: COLORS.WHITE,
 		fontWeight: 'bold'
 	}
-})
+});

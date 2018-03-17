@@ -4,11 +4,9 @@ import axios from 'axios';
 import { API_URL, PUBLIC_KEY, PRIVATE_KEY } from '../constants/Url';
 
 class Api {
-
-	static handleResponse = response => {
-		console.log(response);
+	handleResponse(response) {
 		return response.data.data.results;
-	};
+	}
 
 	getRequest(segment, extraParams = {}) {
 		const url = `${API_URL}/${segment}`;
@@ -22,13 +20,7 @@ class Api {
 			...extraParams
 		};
 
-		// console.log(JSON.stringify(params, null, '\t'));
-
-		return axios.get(url, { params }).then(Api.handleResponse);
-	}
-
-	getThumbnailURL() {
-
+		return axios.get(url, { params }).then(this.handleResponse);
 	}
 
 	getComic(comicID) {
@@ -38,7 +30,6 @@ class Api {
 	getCharacters(offset = 0) {
 		return this.getRequest('public/characters', { offset });
 	}
-
 }
 
 export default Api;

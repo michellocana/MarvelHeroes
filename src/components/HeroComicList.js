@@ -1,8 +1,5 @@
-import React, { Component } from 'react';
-import {
-	Text,
-	View,
-} from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 
 import HeroComic from './HeroComic';
 
@@ -19,15 +16,15 @@ const HeroComicList = props => {
 		<View style={containerStyle}>
 			{comics}
 		</View>
-	)
+	);
 };
 
 const styles = {
-	containerStyle: {		
+	containerStyle: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		marginLeft: -8
 	}
-}
+};
 
 export default HeroComicList;
