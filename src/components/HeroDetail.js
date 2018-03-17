@@ -40,6 +40,7 @@ export default class HeroDetail extends Component {
 
 		this.onBackPress = this.onBackPress.bind(this);
 		this.onAnimationEnd = this.onAnimationEnd.bind(this);
+		this.onScrollViewRef = this.onScrollViewRef.bind(this);
 		this.onScrollViewScroll = this.onScrollViewScroll.bind(this);
 	}
 

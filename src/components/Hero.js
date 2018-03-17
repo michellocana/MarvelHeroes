@@ -53,7 +53,7 @@ class Hero extends Component {
 	getThumbnail() {
 		const thumbnailURL = this.getThumbnailURL();
 
-		if (thumbnailURL.endsWith('image_not_available')) {
+		if (thumbnailURL.endsWith('image_not_available.jpg')) {
 			return defaultThumbnail;
 		}
 

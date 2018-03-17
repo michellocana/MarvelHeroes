@@ -48,9 +48,10 @@ export default class App extends Component {
 
 		return (
 			<View style={styles.container}>
-			<StatusBar
-				backgroundColor={COLORS.STATUSBAR_RED}
-			/>
+				<StatusBar
+					backgroundColor={COLORS.STATUSBAR_RED}
+				/>
+
 				<HeroList onPress={this.onHeroPress} />
 
 				<HeroDetail
