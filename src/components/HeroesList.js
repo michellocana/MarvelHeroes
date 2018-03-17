@@ -7,14 +7,31 @@ import {
 	ActivityIndicator
 } from 'react-native';
 
-import Hero from './Hero';
+import Api from '../utils/Api';
+import Hero from '../components/Hero';
 
-import heroes from '../heroes.json';
+const INITIAL_STATE = {
+	characters: []
+};
 
 export default class HeroesList extends Component {
 
-	renderHeroes() {
-		return heroes.map((hero, index) => (
+	constructor(props) {
+		super(props);
+
+		this.state = INITIAL_STATE;
+	}
+
+	componentDidMount() {
+		const api = new Api();
+
+		api.getCharacters().then(characters => {
+			this.setState({ characters });
+		});
+	}
+
+	renderHeroes(characters) {
+		return characters.map((hero, index) => (
 			<Hero
 				key={index}
 				index={index}
@@ -25,13 +42,15 @@ export default class HeroesList extends Component {
 	}
 
 	render() {
-		const { loading } = this.props;
 		const {
 			containerStyle,
 			spinnerContainerStyle
 		} = styles;
 
-		if (loading) {
+		const { characters } = this.state;
+		const isLoading = characters.length === 0;
+
+		if (isLoading) {
 			return (
 				<View style={spinnerContainerStyle}>
 					<ActivityIndicator />
@@ -41,7 +60,7 @@ export default class HeroesList extends Component {
 
 		return (
 			<ScrollView style={containerStyle}>
-				{this.renderHeroes()}
+				{this.renderHeroes(characters)}
 			</ScrollView>
 		)
 	}

@@ -6,15 +6,13 @@ import {
 	UIManager
 } from 'react-native';
 
-import Api from './Api';
-import HeroesList from './HeroesList';
-import HeroDetail from './HeroDetail';
+import HeroesList from './components/HeroesList';
+import HeroDetail from './components/HeroDetail';
 
 const INITIAL_STATE = {
 	isDetailOpen: false,
 	selectedHero: null,
-	heroDimensions: null,
-	characters: []
+	heroDimensions: null	
 };
 
 export default class App extends Component {
@@ -24,14 +22,6 @@ export default class App extends Component {
 		this.state = INITIAL_STATE;
 
 		this.onHeroPress = this.onHeroPress.bind(this);
-	}
-
-	componentDidMount() {
-		const api = new Api();
-
-		api.getCharacters().then(characters => {
-			this.setState({ characters });
-		});
 	}
 
 	componentWillMount() {
@@ -54,18 +44,12 @@ export default class App extends Component {
 			selectedHero,
 			isShowingDetail,
 			heroDimensions,
-			characters
 		} = this.state;
-
-		const isLoading = characters.length === 0;
 
 		return (
 			<View style={styles.container}>
-				<HeroesList
-					data={characters}
-					loading={isLoading}
-				/>
-
+				<HeroesList onPress={this.onHeroPress} />
+				
 				<HeroDetail
 					selectedHero={selectedHero}
 					isShowingDetail={isShowingDetail}

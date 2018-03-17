@@ -11,6 +11,11 @@ import {
 	BackHandler,
 	StatusBar
 } from 'react-native';
+import _ from 'lodash';
+
+import Api from '../utils/Api';
+import COLORS from '../constants/Colors';
+import HeroComicList from '../components/HeroComicList';
 
 const dimensions = Dimensions.get('window');
 const windowWidth = dimensions.width;
@@ -34,16 +39,16 @@ export default class HeroDetail extends Component {
 		this.onAnimationEnd = this.onAnimationEnd.bind(this);
 	}
 
+	componentDidMount() {
+		BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+	}
+
 	onAnimationEnd() {
 		this.setState({
 			isScrollEnabled: this.props.isShowingDetail,
 			didAnimationStart: false,
 			isAnimating: false
 		});
-	}
-
-	componentDidMount() {
-		BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
 	}
 
 	onBackPress() {
@@ -77,6 +82,16 @@ export default class HeroDetail extends Component {
 		});
 	}
 
+	renderComics() {
+		const { selectedHero } = this.props;
+		
+		return (
+			<HeroComicList 
+				data={selectedHero.comics.items} 
+			/>
+		);		
+	}
+
 	renderImageOverlay() {
 		const { heroDimensions, isShowingDetail } = this.props;
 
@@ -89,7 +104,6 @@ export default class HeroDetail extends Component {
 		return (
 			<Animated.View
 				style={{
-					backgroundColor: 'green',
 					position: 'absolute',
 					zIndex: 2,
 					top: this.animatedValue.interpolate({
@@ -123,11 +137,7 @@ export default class HeroDetail extends Component {
 					width: windowWidth,
 					height: 300
 				}}
-				source={{
-					uri: selectedHero.image,
-					width: windowWidth,
-					height: heroDimensions.height
-				}}
+				source={selectedHero.image}
 			/>
 		);
 	}
@@ -140,7 +150,8 @@ export default class HeroDetail extends Component {
 		const { 
 			infoContainerStyle,
 			infoTextStyle,
-			infoTitleStyle
+			infoTitleStyle,
+			infoSubtitleStyle
 		} = styles;
 
 		return (
@@ -152,6 +163,12 @@ export default class HeroDetail extends Component {
 				<Text style={infoTextStyle}>
 					{selectedHero.description}
 				</Text>
+
+				<Text style={infoSubtitleStyle}>
+					Appears on:
+				</Text>
+
+				{this.renderComics()}
 			</View>
 		)
 	}
@@ -223,7 +240,7 @@ const styles = StyleSheet.create({
 		left: 0,
 		width: '100%',
 		height: windowHeight,
-		backgroundColor: '#f8f8f8'
+		backgroundColor: COLORS.GRAY
 	},
 
 	imageWrapperStyle: {
@@ -240,6 +257,11 @@ const styles = StyleSheet.create({
 	},
 
 	infoTitleStyle: {
+		fontWeight: 'bold',
+		fontSize: 32
+	},
+
+	infoSubtitleStyle: {
 		fontWeight: 'bold',
 		fontSize: 24
 	}

@@ -1,4 +1,4 @@
 export default ({
-	RED: 'red',
+	RED: '#ec2427',
 	GRAY: '#f8f8f8'
 });

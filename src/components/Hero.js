@@ -10,6 +10,8 @@ import {
 
 import HeroDetail from './HeroDetail';
 
+import defaultThumbnail from '../img/hero-placeholder.jpg';
+
 const windowWidth = Dimensions.get('window').width;
 
 class Hero extends Component {
@@ -19,12 +21,30 @@ class Hero extends Component {
 		this.onPress = this.onPress.bind(this);
 	}
 
+	getThumbnail() {
+		const { 
+			extension: thumbExtension, 
+			path: thumbPath 
+		} = this.props.data.thumbnail;
+
+		const thumbnailURL = `${thumbPath}.${thumbExtension}`;
+	
+		if (thumbPath.endsWith('image_not_available')) {
+			return defaultThumbnail;
+		}
+
+		return { uri: thumbnailURL };
+	}
+
 	onPress() {
 		// Measuring position in window to perform HeroDetail animation
 		this.viewRef.measureInWindow((x, y, width, height) => {
-			const dimensions = { x, y, width, height };			
+			const dimensions = { x, y, width, height };
 
-			this.props.onPress(this.props.data, dimensions);
+			this.props.onPress({
+				image: this.getThumbnail(),
+				...this.props.data
+			}, dimensions);
 		});
 	}
 
@@ -45,11 +65,11 @@ class Hero extends Component {
 
 		return (
 			<View 
+				ref={ref => this.viewRef = ref}
 				style={[
 					containerStyle,
 					isFirstOfList && firstOfListContainerStyle
 				]}
-				ref={ref => this.viewRef = ref}
 			>
 				<TouchableNativeFeedback 
 					delayPressIn={0}
@@ -59,10 +79,7 @@ class Hero extends Component {
 					<View>
 						<Image
 							style={imageStyle}
-							source={{
-								uri: data.image,
-								...imageStyle
-							}}
+							source={this.getThumbnail()}
 						/>		
 					</View>
 				</TouchableNativeFeedback>
