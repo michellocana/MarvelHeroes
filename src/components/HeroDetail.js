@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
 	Text,
 	View,
@@ -16,27 +16,34 @@ import _ from 'lodash';
 import Api from '../utils/Api';
 import COLORS from '../constants/Colors';
 import HeroComicList from '../components/HeroComicList';
+import HeroDetailHeader from '../components/HeroDetailHeader';
 
 const dimensions = Dimensions.get('window');
 const windowWidth = dimensions.width;
 const windowHeight = dimensions.height - StatusBar.currentHeight;
 
+const INITIAL_STATE = {
+	isScrollEnabled: false,
+	didAnimationStart: false,			
+	didAnimationEnd: false,
+	headerOpacity: 0
+};
+
 export default class HeroDetail extends Component {
+
+	static HEADER_THRESHOLD = 400;
 
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			isScrollEnabled: false,
-			didAnimationStart: false,			
-			didAnimationEnd: false
-		};
+		this.state = INITIAL_STATE;
 
 		this.animatedValue = new Animated.Value();
 		this.animatedValue.setValue(0);
 
 		this.onBackPress = this.onBackPress.bind(this);
 		this.onAnimationEnd = this.onAnimationEnd.bind(this);
+		this.onScrollViewScroll = this.onScrollViewScroll.bind(this);
 	}
 
 	componentDidMount() {
@@ -82,14 +89,49 @@ export default class HeroDetail extends Component {
 		});
 	}
 
-	renderComics() {
+	onScrollViewScroll({ nativeEvent }) {
+		const { y } = nativeEvent.contentOffset;
+
+		const isHeaderVisible = y > HeroDetail.HEADER_THRESHOLD;
+
+		this.setState({ isHeaderVisible });
+	}
+
+	renderHeader() {
 		const { selectedHero } = this.props;
-		
-		return (
-			<HeroComicList 
-				data={selectedHero.comics.items} 
-			/>
-		);		
+		const { isHeaderVisible } = this.state;
+
+		if (selectedHero) {
+			return (
+				<HeroDetailHeader 
+					visible={isHeaderVisible}
+					title={selectedHero.name}
+				/>
+			);
+		}
+
+		return null;
+	}
+
+	renderComics() {
+		const { infoSubtitleStyle } = styles;
+		const { selectedHero } = this.props;
+
+		if (selectedHero.comics.items.length) {
+			return (
+				<Fragment>
+					<Text style={infoSubtitleStyle}>
+						Appears on:
+					</Text>
+
+					<HeroComicList 
+						data={selectedHero.comics.items} 
+					/>
+				</Fragment>
+			);
+		}
+
+		return null;		
 	}
 
 	renderImageOverlay() {
@@ -150,8 +192,7 @@ export default class HeroDetail extends Component {
 		const { 
 			infoContainerStyle,
 			infoTextStyle,
-			infoTitleStyle,
-			infoSubtitleStyle
+			infoTitleStyle			
 		} = styles;
 
 		return (
@@ -162,10 +203,6 @@ export default class HeroDetail extends Component {
 
 				<Text style={infoTextStyle}>
 					{selectedHero.description}
-				</Text>
-
-				<Text style={infoSubtitleStyle}>
-					Appears on:
 				</Text>
 
 				{this.renderComics()}
@@ -203,6 +240,8 @@ export default class HeroDetail extends Component {
 
 		return (
 			<View style={containerStyle}>
+				{this.renderHeader()}
+				
 				{this.renderImageOverlay()}
 
 				<Animated.View 
@@ -211,7 +250,10 @@ export default class HeroDetail extends Component {
 						animatedTranslate
 					]}
 				>
-					<ScrollView ref={ref => this.ScrollViewRef = ref }>
+					<ScrollView 
+						onScroll={this.onScrollViewScroll}
+						ref={ref => this.ScrollViewRef = ref }
+					>
 						<View style={imageWrapperStyle}>
 							{!isAnimating && this.renderImage()}							
 						</View>
@@ -253,16 +295,20 @@ const styles = StyleSheet.create({
 	},
 
 	infoTextStyle: {
-		fontSize: 18
+		fontSize: 18,
+		color: COLORS.BLACK
 	},
 
 	infoTitleStyle: {
-		fontWeight: 'bold',
-		fontSize: 32
+		fontSize: 32,
+		color: COLORS.BLACK,
+		fontWeight: 'bold'
 	},
 
 	infoSubtitleStyle: {
+		marginTop: 16,
+		fontSize: 24,
 		fontWeight: 'bold',
-		fontSize: 24
+		color: COLORS.BLACK
 	}
 });

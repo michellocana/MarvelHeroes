@@ -9,10 +9,12 @@ import {
 } from 'react-native';
 
 import HeroDetail from './HeroDetail';
-
+import COLORS from '../constants/Colors';
 import defaultThumbnail from '../img/hero-placeholder.jpg';
 
 const windowWidth = Dimensions.get('window').width;
+
+const DEFAULT_DESCRIPTION = 'No description provided.';
 
 class Hero extends Component {
 
@@ -40,10 +42,13 @@ class Hero extends Component {
 		// Measuring position in window to perform HeroDetail animation
 		this.viewRef.measureInWindow((x, y, width, height) => {
 			const dimensions = { x, y, width, height };
+			const { data } = this.props;
+			const { description } = data;
 
 			this.props.onPress({
+				...data,
 				image: this.getThumbnail(),
-				...this.props.data
+				description: description || DEFAULT_DESCRIPTION,
 			}, dimensions);
 		});
 	}
@@ -52,16 +57,15 @@ class Hero extends Component {
 		const { index, data } = this.props;
 
 		const { 
+			imageStyle,
+			titleStyle,
 			containerStyle, 
 			firstOfListContainerStyle 
 		} = styles;
 
-		const imageStyle = {
-			width: windowWidth,
-			height: 300
-		};
-
 		const isFirstOfList = index === 0;
+
+		const name = `#${index + 1} - ${data.name}`
 
 		return (
 			<View 
@@ -80,7 +84,11 @@ class Hero extends Component {
 						<Image
 							style={imageStyle}
 							source={this.getThumbnail()}
-						/>		
+						/>
+
+						<Text style={titleStyle}>
+							{name}
+						</Text>
 					</View>
 				</TouchableNativeFeedback>
 			</View>
@@ -92,15 +100,27 @@ class Hero extends Component {
 const styles = StyleSheet.create({
 	containerStyle: {
 		flex: 0,
-		height: 300,
+		// height: 300,
 		marginHorizontal: 10,
 		marginBottom: 10,
 		elevation: 4,
-		backgroundColor: '#f8f8f8'
+		backgroundColor: COLORS.WHITE
 	},
 
 	firstOfListContainerStyle: {
 		marginTop: 10
+	},
+
+	titleStyle: {
+		fontSize: 18,
+		lineHeight: 22,
+		color: COLORS.BLACK,
+		padding: 16
+	},
+
+	imageStyle: {
+		width: windowWidth,
+		height: 300
 	}
 });
 

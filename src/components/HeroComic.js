@@ -52,13 +52,15 @@ export default class HeroComic extends Component {
 	}
 
 	render() {
-		const { image } = this.state;
 		const { 
+			textStyle,
 			imageStyle,
 			wrapperStyle,
 			containerStyle, 
 			imageContainerStyle
 		} = styles;
+		const { name } = this.props;
+		const { image } = this.state;
 
 		return (
 			<View style={wrapperStyle}>				
@@ -70,7 +72,9 @@ export default class HeroComic extends Component {
 						/>
 					</View>
 
-					<Text>{this.props.name}</Text>
+					<Text style={textStyle}>
+						{name}
+					</Text>
 				</View>
 			</View>
 		);
@@ -95,5 +99,11 @@ const styles = StyleSheet.create({
 
 	imageContainerStyle: {
 		backgroundColor: COLORS.RED
+	},
+
+	textStyle: {
+		fontSize: 16,
+		color: COLORS.BLACK,
+		paddingTop: 4
 	}
 });

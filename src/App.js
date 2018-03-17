@@ -3,9 +3,11 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	UIManager
+	UIManager,
+	StatusBar
 } from 'react-native';
 
+import COLORS from './constants/Colors';
 import HeroesList from './components/HeroesList';
 import HeroDetail from './components/HeroDetail';
 
@@ -48,6 +50,9 @@ export default class App extends Component {
 
 		return (
 			<View style={styles.container}>
+			<StatusBar 
+				backgroundColor={COLORS.STATUSBAR_RED}
+			/>
 				<HeroesList onPress={this.onHeroPress} />
 				
 				<HeroDetail
